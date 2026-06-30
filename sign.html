@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Blogger Sign Up</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .signup-card {
+      background: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 380px;
+    }
+    .signup-card h2 {
+      margin: 0 0 20px;
+      text-align: center;
+      color: #333;
+    }
+    .signup-card label {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .signup-card input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 16px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .signup-card button {
+      width: 100%;
+      padding: 12px;
+      background: #43e97b;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .signup-card button:hover {
+      background: #2ecc71;
+    }
+    .signup-card .footer {
+      margin-top: 16px;
+      font-size: 13px;
+      text-align: center;
+      color: #777;
+    }
+    .signup-card .footer a {
+      color: #43e97b;
+      text-decoration: none;
+    }
+    .captcha-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .captcha-text {
+      background: #eee;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-card">
+    <h2>Create Account</h2>
+    <form onsubmit="handleSignup(event)">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" placeholder="Your name" required>
+      
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="you@example.com" required>
+      
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Enter password" required>
+      
+      <label for="confirm">Confirm Password</label>
+      <input type="password" id="confirm" placeholder="Re-enter password" required>
+      
+      <label>Captcha</label>
+      <div class="captcha-box">
+        <span id="captchaText" class="captcha-text"></span>
+        <input type="text" id="captchaInput" placeholder="Enter captcha" required>
+      </div>
+      
+      <button type="login.">Sign Up</button>
+    </form>
+    <div class="footer">
+      Already have an account? <a href="login.html">Login</a>
+    </div>
+  </div>
+
+  <script>
+    // Generate simple captcha
+    function generateCaptcha(){
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let code = "";
+      for(let i=0;i<5;i++){
+        code += chars.charAt(Math.floor(Math.random()*chars.length));
+      }
+      document.getElementById("captchaText").textContent = code;
+      return code;
+    }
+    let currentCaptcha = generateCaptcha();
+
+    function handleSignup(event){
+      event.preventDefault();
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const confirm = document.getElementById("confirm").value;
+      const captchaInput = document.getElementById("captchaInput").value;
+
+      if(password !== confirm){
+        alert("Passwords do not match!");
+        return;
+      }
+      if(captchaInput !== currentCaptcha){
+        alert("Captcha incorrect!");
+        currentCaptcha = generateCaptcha(); // refresh captcha
+        return;
+      }
+      alert("Account created for " + name + "!");
+      window.location.href = "login.html"; // redirect to login
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Private Posts</title>
+  <style>
+    body { font-family:"Segoe UI",Roboto,Arial,sans-serif; background:#f4f4f9; margin:0; padding:20px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    button { padding:10px 15px; background:#007bff; color:#fff; border:none; border-radius:6px; cursor:pointer; }
+    button:hover { background:#0056b3; }
+    .card { background:#fff; padding:20px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.1); margin-bottom:20px; }
+    .post { background:#fff; padding:15px; border-radius:8px; margin-bottom:12px; box-shadow:0 2px 6px rgba(0,0,0,0.05); }
+    .muted { font-size:13px; color:#777; }
+    .searchbar { margin-bottom:20px; display:flex; gap:10px; }
+    .searchbar input { flex:1; padding:10px; border:1px solid #ccc; border-radius:6px; }
+    input, textarea { width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:6px; }
+  </style>
+</head>
+<body>
+  <!-- Top bar -->
+  <div class="topbar">
+    <button onclick="goMain()">🏠 Back to Main</button>
+    <button onclick="goProfile()">👤 User Profile</button>
+  </div>
+
+  <!-- Search bar -->
+  <div class="searchbar">
+    <input type="text" id="searchInput" placeholder="Search private posts...">
+    <button onclick="searchPosts()">Search</button>
+    <button onclick="showGroupForm()">➕ Create Group</button>
+    <button onclick="showPostForm()">➕ Private Post</button>
+  </div>
+
+  <!-- Private posts -->
+  <div class="card">
+    <h3>🔒 Private Posts</h3>
+    <div id="privatePosts"></div>
+    <p id="noPrivate" class="muted">No private posts yet.</p>
+  </div>
+
+  <!-- Group creation form -->
+  <div class="card" id="groupForm" style="display:none;">
+    <h3>Create Group</h3>
+    <input type="text" id="groupName" placeholder="Group/Page Name">
+    <input type="password" id="groupPassword" placeholder="Password">
+    <button onclick="createGroup()">Create Group</button>
+  </div>
+
+  <!-- Private post form -->
+  <div class="card" id="postForm" style="display:none;">
+    <h3>Create Private Post</h3>
+    <input type="text" id="postTitle" placeholder="Title">
+    <textarea id="postContent" placeholder="Content"></textarea>
+    <input type="number" id="groupId" placeholder="Group ID (1-9999999999999)">
+    <button onclick="addPrivatePost()">Publish</button>
+  </div>
+
+  <script>
+    const PRIVATE_KEY="private_posts";
+    const GROUPS_KEY="private_groups";
+    const SESSION_KEY="blogger_session";
+
+    function goMain(){ window.location.href="main.html"; }
+    function goProfile(){ window.location.href="user.html"; }
+
+    function renderPosts(filter=""){
+      const posts=JSON.parse(localStorage.getItem(PRIVATE_KEY)||"[]");
+      const privateContainer=document.getElementById("privatePosts");
+      privateContainer.innerHTML="";
+      let count=0;
+
+      posts.forEach(p=>{
+        const matches=p.title.toLowerCase().includes(filter.toLowerCase()) ||
+                      p.content.toLowerCase().includes(filter.toLowerCase());
+        if(matches){
+          const div=document.createElement("div");
+          div.className="post";
+          div.innerHTML=`<h4>${p.title}</h4><p>${p.content}</p><small>Group ID: ${p.groupId}</small>`;
+          privateContainer.appendChild(div);
+          count++;
+        }
+      });
+
+      document.getElementById("noPrivate").style.display=count? "none":"block";
+    }
+
+    function searchPosts(){
+      const query=document.getElementById("searchInput").value;
+      renderPosts(query);
+    }
+
+    function showGroupForm(){ document.getElementById("groupForm").style.display="block"; }
+    function showPostForm(){ document.getElementById("postForm").style.display="block"; }
+
+    function createGroup(){
+      const name=document.getElementById("groupName").value;
+      const password=document.getElementById("groupPassword").value;
+      if(!name || !password){ alert("Fill in both fields."); return; }
+
+      const groups=JSON.parse(localStorage.getItem(GROUPS_KEY)||"[]");
+      groups.push({name,password});
+      localStorage.setItem(GROUPS_KEY,JSON.stringify(groups));
+      alert("Group created successfully!");
+      document.getElementById("groupForm").style.display="none";
+    }
+
+    function addPrivatePost(){
+      const title=document.getElementById("postTitle").value;
+      const content=document.getElementById("postContent").value;
+      const groupId=document.getElementById("groupId").value;
+      if(!title || !content || !groupId){ alert("Fill in all fields."); return; }
+      if(groupId<1 || groupId>9999999999999){ alert("Invalid Group ID."); return; }
+
+      const posts=JSON.parse(localStorage.getItem(PRIVATE_KEY)||"[]");
+      const email=localStorage.getItem(SESSION_KEY)||"Anonymous";
+      posts.push({title,content,author:email,groupId});
+      localStorage.setItem(PRIVATE_KEY,JSON.stringify(posts));
+
+      document.getElementById("postTitle").value="";
+      document.getElementById("postContent").value="";
+      document.getElementById("groupId").value="";
+      document.getElementById("postForm").style.display="none";
+      renderPosts();
+    }
+
+    // Initial load
+    renderPosts();
+  </script>
+</body>
+</html>

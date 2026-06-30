@@ -1,0 +1,151 @@
+ <!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Main Blog Page</title>
+  <style>
+    body { font-family:"Segoe UI",Roboto,Arial,sans-serif; background:#f4f4f9; margin:0; padding:20px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    button { padding:10px 15px; background:#007bff; color:#fff; border:none; border-radius:6px; cursor:pointer; }
+    button:hover { background:#0056b3; }
+    .card { background:#fff; padding:20px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.1); margin-bottom:20px; }
+    .post { background:#fff; padding:15px; border-radius:8px; margin-bottom:12px; box-shadow:0 2px 6px rgba(0,0,0,0.05); }
+    .muted { font-size:13px; color:#777; }
+    .actions { margin-top:10px; }
+    .actions button { margin-right:8px; background:#dc3545; }
+    .actions button.undo { background:#28a745; }
+    .searchbar { margin-bottom:20px; display:flex; gap:10px; }
+    .searchbar input { flex:1; padding:10px; border:1px solid #ccc; border-radius:6px; }
+  </style>
+</head>
+<body>
+  <!-- Top bar -->
+  <div class="topbar">
+    <button onclick="goPrivate()">🔒 Private Posts</button>
+    <button onclick="goProfile()">👤 User Profile</button>
+  </div>
+
+  <!-- Search bar -->
+  <div class="searchbar">
+    <input type="text" id="searchInput" placeholder="Search posts...">
+    <button onclick="searchPosts()">Search</button>
+    <button onclick="showPostForm()">➕ Post Public</button>
+  </div>
+
+  <!-- Public posts -->
+  <div class="card">
+    <h3>🌍 World Public Posts</h3>
+    <div id="publicPosts"></div>
+    <p id="noPublic" class="muted">No public posts yet.</p>
+  </div>
+
+  <!-- My posts -->
+  <div class="card">
+    <h3>📝 My Posts</h3>
+    <div id="myPosts"></div>
+    <p id="noMine" class="muted">You haven’t posted anything yet.</p>
+  </div>
+
+  <!-- Post form (hidden initially) -->
+  <div class="card" id="postForm" style="display:none;">
+    <h3>Create Public Post</h3>
+    <input type="text" id="postTitle" placeholder="Title" style="width:100%;padding:10px;margin-bottom:10px;">
+    <textarea id="postContent" placeholder="Content" style="width:100%;padding:10px;height:100px;margin-bottom:10px;"></textarea>
+    <button onclick="addPublicPost()">Publish</button>
+  </div>
+
+  <script>
+    const POSTS_KEY="blogger_posts";
+    const SESSION_KEY="blogger_session";
+    let deletedStack=[];
+
+    function goPrivate(){ window.location.href="private.html"; }
+    function goProfile(){ window.location.href="user.html"; }
+
+    function renderPosts(filter=""){
+      const posts=JSON.parse(localStorage.getItem(POSTS_KEY)||"[]");
+      const email=localStorage.getItem(SESSION_KEY)||"Anonymous";
+
+      const publicContainer=document.getElementById("publicPosts");
+      const myContainer=document.getElementById("myPosts");
+      publicContainer.innerHTML=""; myContainer.innerHTML="";
+      let pubCount=0, myCount=0;
+
+      posts.forEach((p,i)=>{
+        const matches=p.title.toLowerCase().includes(filter.toLowerCase()) || 
+                      p.content.toLowerCase().includes(filter.toLowerCase());
+
+        if(p.visibility==="public" && matches){
+          const div=document.createElement("div");
+          div.className="post";
+          div.innerHTML=`<h4>${p.title}</h4><p>${p.content}</p><small>by ${p.author}</small>`;
+          publicContainer.appendChild(div);
+          pubCount++;
+        }
+        if(p.author===email && matches){
+          const div=document.createElement("div");
+          div.className="post";
+          div.innerHTML=`<h4>${p.title}</h4><p>${p.content}</p><small>by You</small>
+            <div class="actions">
+              <button onclick="deletePost(${i})">Delete</button>
+              <button class="undo" onclick="undoDelete()">Undo</button>
+            </div>`;
+          myContainer.appendChild(div);
+          myCount++;
+        }
+      });
+
+      document.getElementById("noPublic").style.display=pubCount? "none":"block";
+      document.getElementById("noMine").style.display=myCount? "none":"block";
+    }
+
+    function deletePost(index){
+      const posts=JSON.parse(localStorage.getItem(POSTS_KEY)||"[]");
+      deletedStack.push(posts[index]);
+      posts.splice(index,1);
+      localStorage.setItem(POSTS_KEY,JSON.stringify(posts));
+      renderPosts();
+    }
+
+    function undoDelete(){
+      if(deletedStack.length){
+        const posts=JSON.parse(localStorage.getItem(POSTS_KEY)||"[]");
+        posts.unshift(deletedStack.pop());
+        localStorage.setItem(POSTS_KEY,JSON.stringify(posts));
+        renderPosts();
+      } else {
+        alert("No post to undo.");
+      }
+    }
+
+    function searchPosts(){
+      const query=document.getElementById("searchInput").value;
+      renderPosts(query);
+    }
+
+    function showPostForm(){
+      document.getElementById("postForm").style.display="block";
+    }
+
+    function addPublicPost(){
+      const title=document.getElementById("postTitle").value;
+      const content=document.getElementById("postContent").value;
+      if(!title || !content){ alert("Please fill in both fields."); return; }
+
+      const posts=JSON.parse(localStorage.getItem(POSTS_KEY)||"[]");
+      const email=localStorage.getItem(SESSION_KEY)||"Anonymous";
+      posts.push({title,content,author:email,visibility:"public"});
+      localStorage.setItem(POSTS_KEY,JSON.stringify(posts));
+
+      document.getElementById("postTitle").value="";
+      document.getElementById("postContent").value="";
+      document.getElementById("postForm").style.display="none";
+      renderPosts();
+    }
+
+    // Initial load
+    renderPosts();
+  </script>
+</body>
+</html>

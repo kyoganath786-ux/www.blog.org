@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>User Profile</title>
+  <style>
+    body { font-family:"Segoe UI",Roboto,Arial,sans-serif; background:#f4f4f9; margin:0; padding:20px; }
+    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    button { padding:10px 15px; background:#007bff; color:#fff; border:none; border-radius:6px; cursor:pointer; }
+    button:hover { background:#0056b3; }
+    .card { background:#fff; padding:20px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.1); margin-bottom:20px; }
+    input, textarea { width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:6px; }
+    .profile-info { margin-top:10px; }
+    .profile-info p { margin:5px 0; }
+  </style>
+</head>
+<body>
+  <!-- Top bar -->
+  <div class="topbar">
+    <button onclick="goMain()">🏠 Back to Main</button>
+    <button onclick="logout()">🚪 Logout</button>
+  </div>
+
+  <!-- Profile card -->
+  <div class="card">
+    <h2>👤 User Profile</h2>
+    <div class="profile-info" id="profileInfo">
+      <p><strong>Name:</strong> <span id="profileName"></span></p>
+      <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+      <p><strong>Bio:</strong> <span id="profileBio"></span></p>
+    </div>
+    <button onclick="showEditForm()">✏️ Edit Profile</button>
+  </div>
+
+  <!-- Edit form -->
+  <div class="card" id="editForm" style="display:none;">
+    <h3>Edit Profile</h3>
+    <input type="text" id="editName" placeholder="Name">
+    <input type="email" id="editEmail" placeholder="Email">
+    <textarea id="editBio" placeholder="Bio"></textarea>
+    <button onclick="saveProfile()">Save</button>
+  </div>
+
+  <script>
+    const PROFILE_KEY="user_profile";
+
+    function goMain(){ window.location.href="main.html"; }
+    function logout(){
+      localStorage.removeItem("blogger_session");
+      alert("Logged out!");
+      window.location.href="login.html";
+    }
+
+    function loadProfile(){
+      const profile=JSON.parse(localStorage.getItem(PROFILE_KEY)||"{}");
+      document.getElementById("profileName").textContent=profile.name||"Not set";
+      document.getElementById("profileEmail").textContent=profile.email||"Not set";
+      document.getElementById("profileBio").textContent=profile.bio||"Not set";
+    }
+
+    function showEditForm(){
+      const profile=JSON.parse(localStorage.getItem(PROFILE_KEY)||"{}");
+      document.getElementById("editName").value=profile.name||"";
+      document.getElementById("editEmail").value=profile.email||"";
+      document.getElementById("editBio").value=profile.bio||"";
+      document.getElementById("editForm").style.display="block";
+    }
+
+    function saveProfile(){
+      const name=document.getElementById("editName").value;
+      const email=document.getElementById("editEmail").value;
+      const bio=document.getElementById("editBio").value;
+      const profile={name,email,bio};
+      localStorage.setItem(PROFILE_KEY,JSON.stringify(profile));
+      document.getElementById("editForm").style.display="none";
+      loadProfile();
+    }
+
+    // Initial load
+    loadProfile();
+  </script>
+</body>
+</html>
