@@ -1,0 +1,70 @@
+<UserControl x:Class="NickAI.App.Views.ArtifactsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:NickAI.App.ViewModels">
+
+  <UserControl.Resources>
+    <DataTemplate DataType="{x:Type vm:ArtifactViewModel}">
+      <Border Style="{StaticResource GlassPanel}" Margin="0,0,0,10">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+
+          <StackPanel Grid.Column="0">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="{Binding TypeLabel}"
+                         Foreground="{DynamicResource AccentSolidBrush}"
+                         FontWeight="SemiBold"
+                         FontSize="11"
+                         VerticalAlignment="Center" />
+              <TextBlock Text="{Binding Name}" Margin="8,0,0,0" FontWeight="SemiBold" VerticalAlignment="Center" />
+            </StackPanel>
+            <TextBlock Text="{Binding Preview}" Style="{StaticResource Muted}" TextWrapping="Wrap" MaxHeight="80" Margin="0,6,0,0" />
+            <TextBlock Text="{Binding Path}" Style="{StaticResource Muted}" FontFamily="Consolas" TextWrapping="Wrap" Margin="0,4,0,0" />
+          </StackPanel>
+
+          <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+            <Button Content="Open" Style="{StaticResource PrimaryButton}" Command="{Binding OpenCommand}" />
+            <Button Content="Open folder" Style="{StaticResource GhostButton}" Margin="8,0,0,0" Command="{Binding OpenFolderCommand}" />
+          </StackPanel>
+        </Grid>
+      </Border>
+    </DataTemplate>
+  </UserControl.Resources>
+
+  <Grid Margin="22">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <Grid Grid.Row="0" Margin="0,0,0,16">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <StackPanel Grid.Column="0">
+        <TextBlock Text="Artifacts" Style="{StaticResource H1}" />
+        <TextBlock Text="{Binding RootPath}" Style="{StaticResource Muted}" FontFamily="Consolas" TextWrapping="Wrap" Margin="0,6,0,0" />
+      </StackPanel>
+      <Button Grid.Column="1"
+              Content="Open artifacts folder"
+              Style="{StaticResource GhostButton}"
+              VerticalAlignment="Top"
+              Command="{Binding OpenRootCommand}" />
+    </Grid>
+
+    <TextBlock Grid.Row="1"
+               Text="No artifacts yet. Ask NICK to create something and it will appear here."
+               Style="{StaticResource Muted}"
+               VerticalAlignment="Center"
+               HorizontalAlignment="Center"
+               Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVis}}" />
+
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Visibility="{Binding IsEmpty, Converter={StaticResource InverseBoolToVis}}">
+      <ItemsControl ItemsSource="{Binding Items}" Margin="0,0,8,0" />
+    </ScrollViewer>
+  </Grid>
+</UserControl>

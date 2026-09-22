@@ -1,0 +1,29 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#F4F7FB" />
+  <SolidColorBrush x:Key="PanelBrush" Color="#FFFFFF" />
+  <SolidColorBrush x:Key="PanelAltBrush" Color="#EDF2F9" />
+  <SolidColorBrush x:Key="BorderSoftBrush" Color="#D6DEEA" />
+  <SolidColorBrush x:Key="TextPrimaryBrush" Color="#0F1B2D" />
+  <SolidColorBrush x:Key="TextSecondaryBrush" Color="#5C6B82" />
+  <SolidColorBrush x:Key="UserBubbleBrush" Color="#DCEBFB" />
+  <SolidColorBrush x:Key="AssistantBubbleBrush" Color="#FFFFFF" />
+  <SolidColorBrush x:Key="CodeBackgroundBrush" Color="#0F1B2D" />
+  <SolidColorBrush x:Key="SuccessBrush" Color="#0F9D63" />
+  <SolidColorBrush x:Key="ErrorBrush" Color="#DC2626" />
+  <SolidColorBrush x:Key="WarningBrush" Color="#B45309" />
+  <SolidColorBrush x:Key="AccentSolidBrush" Color="#0891B2" />
+
+  <LinearGradientBrush x:Key="AccentBrush" StartPoint="0,0" EndPoint="1,1">
+    <GradientStop Color="#06B6D4" Offset="0" />
+    <GradientStop Color="#4F46E5" Offset="1" />
+  </LinearGradientBrush>
+
+  <LinearGradientBrush x:Key="WindowGlowBrush" StartPoint="0,0" EndPoint="1,1">
+    <GradientStop Color="#EAF2FB" Offset="0" />
+    <GradientStop Color="#F7FAFD" Offset="0.55" />
+    <GradientStop Color="#E9F6F9" Offset="1" />
+  </LinearGradientBrush>
+
+</ResourceDictionary>

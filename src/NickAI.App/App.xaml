@@ -1,0 +1,16 @@
+<Application x:Class="NickAI.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:NickAI.App.Converters"
+             ShutdownMode="OnMainWindowClose">
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Themes/Dark.xaml" />
+        <ResourceDictionary Source="Themes/Shared.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+
+      <conv:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVis" />
+    </ResourceDictionary>
+  </Application.Resources>
+</Application>
