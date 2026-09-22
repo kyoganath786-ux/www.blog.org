@@ -1,0 +1,32 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # EnableWindowsTargeting lets the WPF project (net8.0-windows) compile on a
+      # Linux runner, so the shell and its XAML are verified too. The tests
+      # themselves target plain net8.0 and run anywhere.
+      - name: Restore
+        run: dotnet restore NickAI.sln -p:EnableWindowsTargeting=true
+
+      - name: Build
+        run: dotnet build NickAI.sln -c Release --no-restore -p:EnableWindowsTargeting=true
+
+      - name: Test
+        run: dotnet test tests/NickAI.Core.Tests/NickAI.Core.Tests.csproj -c Release --no-build
